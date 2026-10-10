@@ -13,6 +13,7 @@ import (
 	"github.com/mhmddaud/transjakarta-fleet/internal/config"
 	"github.com/mhmddaud/transjakarta-fleet/internal/database"
 	"github.com/mhmddaud/transjakarta-fleet/internal/handler"
+	"github.com/mhmddaud/transjakarta-fleet/internal/mqtt"
 	"github.com/mhmddaud/transjakarta-fleet/internal/rabbitmq"
 	"github.com/mhmddaud/transjakarta-fleet/internal/repository"
 	"github.com/mhmddaud/transjakarta-fleet/internal/service"
@@ -68,10 +69,29 @@ func main() {
 		publisher,
 	)
 
+	// MQTT subscriber untuk menerima lokasi kendaraan.
+	mqttSubscriber, err := mqtt.NewSubscriber(
+		cfg.MQTTBroker,
+		cfg.MQTTClientID,
+		"/fleet/vehicle/+/location",
+		locationSvc,
+	)
+	if err != nil {
+		log.Fatalf("configure MQTT subscriber: %v", err)
+	}
+
+	if err := mqttSubscriber.Connect(ctx); err != nil {
+		log.Fatalf("connect MQTT subscriber: %v", err)
+	}
+	defer mqttSubscriber.Close()
+
 	locationHandler := handler.NewLocationHandler(locationSvc)
 
 	mux := http.NewServeMux()
+
 	mux.Handle("/api/v1/locations", locationHandler)
+	mux.HandleFunc("/vehicles/", locationHandler.ServeVehicleHTTP)
+
 	mux.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		_, _ = w.Write([]byte(`{"status":"ok"}`))

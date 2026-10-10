@@ -12,6 +12,12 @@ import (
 type LocationRepository interface {
 	Insert(ctx context.Context, location *model.VehicleLocation) error
 	GetLatest(ctx context.Context, vehicleID string) (*model.VehicleLocation, error)
+	GetHistory(
+		ctx context.Context,
+		vehicleID string,
+		start int64,
+		end int64,
+	) ([]model.VehicleLocation, error)
 }
 
 type GeofenceChecker interface {
@@ -144,4 +150,49 @@ func (s *LocationService) ProcessLocation(
 	}
 
 	return nil, nil
+}
+
+// HandleMQTTLocation memproses lokasi yang diterima dari MQTT.
+func (s *LocationService) HandleMQTTLocation(
+	ctx context.Context,
+	location *model.VehicleLocation,
+) error {
+	_, err := s.ProcessLocation(ctx, location)
+	return err
+}
+
+// GetLatestLocation mengambil lokasi terakhir kendaraan.
+func (s *LocationService) GetLatestLocation(
+	ctx context.Context,
+	vehicleID string,
+) (*model.VehicleLocation, error) {
+	vehicleID = strings.TrimSpace(vehicleID)
+	if vehicleID == "" {
+		return nil, errors.New("vehicle_id is required")
+	}
+
+	return s.repository.GetLatest(ctx, vehicleID)
+}
+
+// GetLocationHistory mengambil riwayat lokasi kendaraan.
+func (s *LocationService) GetLocationHistory(
+	ctx context.Context,
+	vehicleID string,
+	start int64,
+	end int64,
+) ([]model.VehicleLocation, error) {
+	vehicleID = strings.TrimSpace(vehicleID)
+	if vehicleID == "" {
+		return nil, errors.New("vehicle_id is required")
+	}
+
+	if start <= 0 || end <= 0 {
+		return nil, errors.New("start and end must be positive Unix timestamps")
+	}
+
+	if start > end {
+		return nil, errors.New("start must be less than or equal to end")
+	}
+
+	return s.repository.GetHistory(ctx, vehicleID, start, end)
 }

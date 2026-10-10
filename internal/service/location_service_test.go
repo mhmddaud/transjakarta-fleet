@@ -14,6 +14,15 @@ type fakeLocationRepository struct {
 	err    error
 }
 
+func (f *fakeLocationRepository) GetHistory(
+	ctx context.Context,
+	vehicleID string,
+	start int64,
+	end int64,
+) ([]model.VehicleLocation, error) {
+	return []model.VehicleLocation{}, nil
+}
+
 func (f *fakeLocationRepository) GetLatest(
 	ctx context.Context,
 	vehicleID string,
