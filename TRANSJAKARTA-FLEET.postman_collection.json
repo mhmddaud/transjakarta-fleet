@@ -1,0 +1,63 @@
+{
+  "info": {
+    "_postman_id": "bda0e270-6dd9-4b41-82b2-4600b856e7bc",
+    "name": "TRANSJAKARTA-FLEET",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "1161238",
+    "_collection_link": "https://go.postman.co/collection/1161238-bda0e270-6dd9-4b41-82b2-4600b856e7bc?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Get Lokasi Terbaru",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/vehicles/B1234XYZ/location",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "vehicles",
+            "B1234XYZ",
+            "location"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get Riwayat Lokasi",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/vehicles/B1234XYZ/history?start=1791730000&end=1791740000",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "vehicles",
+            "B1234XYZ",
+            "history"
+          ],
+          "query": [
+            {
+              "key": "start",
+              "value": "1791730000"
+            },
+            {
+              "key": "end",
+              "value": "1791740000"
+            }
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}
