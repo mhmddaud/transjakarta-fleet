@@ -30,6 +30,7 @@ services:
     container_name: transjakarta-rabbitmq
     restart: unless-stopped
     environment:
+      TZ: Asia/Jakarta
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER:-fleet}
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS:-fleet_dev_password}
     ports:
@@ -46,6 +47,8 @@ services:
     container_name: transjakarta-postgres
     restart: unless-stopped
     environment:
+      TZ: Asia/Jakarta
+      PGTZ: Asia/Jakarta
       POSTGRES_DB: ${POSTGRES_DB:-fleet}
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
